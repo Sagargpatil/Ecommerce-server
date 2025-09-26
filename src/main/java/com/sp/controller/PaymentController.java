@@ -26,8 +26,6 @@ import com.sp.response.ApiResponse;
 import com.sp.response.PaymentLinkResponse;
 import com.sp.service.OrderService;
 import com.sp.service.UserService;
-import com.zosh.user.domain.OrderStatus;
-import com.zosh.user.domain.PaymentStatus;
 
 @RestController
 @RequestMapping("/api")
@@ -76,7 +74,7 @@ public class PaymentController {
 			paymentLinkRequest.put("notify", notify);
 			paymentLinkRequest.put("reference_id", String.valueOf(orderId));
 
-			paymentLinkRequest.put("callback_url","https://codewithsp-ecommerce.vercel.app/payments/"+orderId);
+			paymentLinkRequest.put("callback_url","http://localhost:3000/payments/"+orderId);
 			paymentLinkRequest.put("callback_method","get");
 			
 			PaymentLink payment=razorpay.paymentLink.create(paymentLinkRequest);
@@ -112,13 +110,9 @@ public class PaymentController {
 			Payment payment = razorpay.payments.fetch(paymentId);
 			System.out.println("The payment details will be "+payment);
 			if(payment.get("status").equals("captured")) {
-				System.out.println("payment details --- "+payment+payment.get("status"));
-			  
 				order.getPaymentDetails().setPaymentId(paymentId);
 				order.getPaymentDetails().setStatus("COMPLETED");
 				order.setOrderStatus("PLACED");
-//				order.setOrderItems(order.getOrderItems());
-				System.out.println(order.getPaymentDetails().getStatus()+"payment status ");
 				orderRepository.save(order);
 			}
 			
